@@ -1,0 +1,237 @@
+#include <MPR121.h>
+#include<Wire.h>
+#include <TimeLib.h>
+
+#define led1 2
+#define led2 3
+#define led3 4
+#define led4 5
+#define led5 6
+#define led6 7
+#define led7 8
+#define led8 9
+#define led9 10
+#define led10 11
+#define led11 12
+#define led12 13
+
+#define TIME_HEADER  "T"   
+#define TIME_REQUEST  7
+
+#define numElectrodes 12
+#define DELIMITER ","
+
+int brightness1 = 0;
+int brightness2 = 0;
+int brightness3 = 0;
+int brightness4 = 0;
+int brightness5 = 0;
+int brightness6 = 0;
+int brightness7 = 0;
+int brightness8 = 0;
+int brightness9 = 0;
+int brightness10 = 0;
+int brightness11 = 0;
+int brightness12 = 0;
+
+int sensorValue = 0;
+
+void setup() {
+  Serial.begin(9600);
+  Wire.begin();
+  pinMode (led1, OUTPUT);
+  pinMode (led2, OUTPUT);
+  pinMode (led4, OUTPUT);
+  pinMode (led5, OUTPUT);
+  pinMode (led6, OUTPUT);
+  pinMode (led7, OUTPUT);
+  pinMode (led8, OUTPUT);
+  pinMode (led9, OUTPUT);
+  pinMode (led10, OUTPUT);
+  pinMode (led11, OUTPUT);
+  pinMode (led12, OUTPUT);
+
+  setSyncProvider(requestSync);
+  Serial.println("Waiting for sync message");
+  
+
+  MPR121.begin( 0x5A );
+  MPR121.setInterruptPin( 20 );
+  MPR121.setTouchThreshold( 10 );
+  MPR121.setReleaseThreshold( 4 );
+
+ 
+}
+
+void loop() {
+
+  int mySeconds = second();
+  
+  if(Serial.available()){
+    processSyncMessage();
+  }
+  if(timeStatus()!= timeNotSet) {
+    digitalClockDisplay();  
+  }
+
+  
+  MPR121.updateTouchData();
+  
+  Serial.println( MPR121.getTouchData( 0 ) );
+  sensorValue = MPR121.getTouchData(0);
+
+  analogWrite(led1, brightness1);
+  analogWrite(led2, brightness2);
+  analogWrite(led3, brightness3);
+  analogWrite(led4, brightness4);
+  analogWrite(led5, brightness5);
+  analogWrite(led6, brightness6);
+  analogWrite(led7, brightness7);
+  analogWrite(led8, brightness8);
+  analogWrite(led9, brightness9);
+  analogWrite(led10, brightness10);
+  analogWrite(led11, brightness11);
+  analogWrite(led12, brightness12);
+
+
+  // FAKING A TOUCH
+sensorValue = HIGH;
+  
+  if ( sensorValue == 1 && mySeconds<5) {
+    brightness1 = 255;
+  } else {
+    brightness1 -= 20;
+    if ( brightness1 < 0 ) brightness1 = 0;
+    delay( 100 );
+  } 
+  
+  if ( sensorValue == 1 && mySeconds>5 && mySeconds<10 ) {
+    brightness2 = 255;
+  }else {
+    brightness2 -= 20;
+    if ( brightness2 < 0) brightness2 = 0;
+    delay( 100 );
+  }
+  
+    if ( sensorValue == HIGH && mySeconds>10 && mySeconds<15 ) {
+    brightness3 = 255;
+  }else {
+    brightness3 -= 10;
+    if ( brightness3 < 0) brightness3 = 0;
+    delay( 100 );
+  }
+  
+    if ( sensorValue == HIGH && mySeconds>15 && mySeconds<20 ) {
+    brightness4 = 255;
+  }else {
+    brightness4 -= 10;
+    if ( brightness4 < 0) brightness4 = 0;
+    delay( 100 );
+  }
+  
+    if ( sensorValue == HIGH && mySeconds>20 && mySeconds<25 ) {
+    brightness5 = 255;
+  }else {
+    brightness5 -= 10;
+    if ( brightness5 < 0) brightness5 = 0;
+    delay( 100 );
+  }
+
+    if ( sensorValue == HIGH && mySeconds>25 && mySeconds<30 ) {
+    brightness6 = 255;
+  }else {
+    brightness6 -= 10;
+    if ( brightness6 < 0) brightness6 = 0;
+    delay( 100 );
+  }
+
+    if ( sensorValue == HIGH && mySeconds>30 && mySeconds<35 ) {
+    brightness7 = 255;
+  }else {
+    brightness7 -= 10;
+    if ( brightness7 < 0) brightness7 = 0;
+    delay( 100 );
+  }
+
+    if ( sensorValue == HIGH && mySeconds>35 && mySeconds<40 ) {
+    brightness8 = 255;
+  }else {
+    brightness8 -= 10;
+    if ( brightness8 < 0) brightness8 = 0;
+    delay( 100 );
+  }
+
+    if ( sensorValue == HIGH && mySeconds>40 && mySeconds<45 ) {
+    brightness9 = 255;
+  }else {
+    brightness9 -= 10;
+    if ( brightness9 < 0) brightness9 = 0;
+    delay( 100 );
+  }
+
+    if ( sensorValue == HIGH && mySeconds>45 && mySeconds<50 ) {
+    brightness10 = 255;
+  }else {
+    brightness10 -= 10;
+    if ( brightness10 < 0) brightness10 = 0;
+    delay( 100 );
+  }
+
+    if ( sensorValue == HIGH && mySeconds>50 && mySeconds<55 ) {
+    brightness11 = 255;
+  }else {
+    brightness11 -= 10;
+    if ( brightness11 < 0) brightness11 = 0;
+    delay( 100 );
+  }
+
+    if ( sensorValue == HIGH && mySeconds > 55 && mySeconds < 60 ) {
+    brightness12 = 255;
+  }else {
+    brightness12 -= 10;
+    if ( brightness12 < 0) brightness12 = 0;
+    delay( 100 );
+  }
+}
+
+void digitalClockDisplay(){
+  // digital clock display of the time
+  //Serial.print(hour()); 
+  //printDigits(minute());
+  Serial.println(second());
+  //Serial.print(" ");
+  //Serial.print(day());
+  //Serial.print(" ");
+  //Serial.print(month());
+  //Serial.print(" ");
+  //Serial.print(year()); 
+  //Serial.println(); 
+}
+
+
+void printDigits(int digits){
+  // utility function for digital clock display: prints preceding colon and leading 0
+  Serial.print(":");
+  if(digits < 10)
+    Serial.print('0');
+  Serial.print(digits);
+}
+
+
+void processSyncMessage() {
+  unsigned long pctime;
+  const unsigned long DEFAULT_TIME = 1357041600; // Jan 1 2013
+
+  if(Serial.find(TIME_HEADER)) {
+     pctime = Serial.parseInt();
+     if( pctime >= DEFAULT_TIME) { // check the integer is a valid time (greater than Jan 1 2013)
+       setTime(pctime); // Sync Arduino clock to the time received on the serial port
+     }
+  }
+}
+
+time_t requestSync()
+{
+  Serial.write(TIME_REQUEST);  
+  return 0; // the time will be sent later in response to serial mesg
+}
